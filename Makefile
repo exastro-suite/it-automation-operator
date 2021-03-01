@@ -1,3 +1,16 @@
+# ********** WORKAROUND **********
+# Operator SDK Tutorial says;
+#   If using an OS which does not point sh to the bash shell (Ubuntu for example) then you should
+#   add the following line to the Makefile:
+#
+#     SHELL := /bin/bash
+#
+#   This will fix potential issues when the docker-build target runs the controller test suite.
+#   Issues maybe similar to following error:
+#
+#     failed to start the controlplane. retried 5 times: fork/exec /usr/local/kubebuilder/bin/etcd: no such file or directory occurred
+SHELL := /bin/bash
+
 # VERSION defines the project version for the bundle. 
 # Update this value when you upgrade the version of your project.
 # To re-generate a bundle for another specific version without changing the standard setup, you can:
