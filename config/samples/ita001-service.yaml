@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: /usr/local/bin/kompose convert -f ../docker-compose.yml
+    kompose.version: 1.22.0 (955b78124)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: ita001
+  name: ita001
+spec:
+  ports:
+    - name: "10088"
+      port: 10088
+      targetPort: 80
+    - name: "10483"
+      port: 10483
+      targetPort: 443
+  selector:
+    io.kompose.service: ita001
+status:
+  loadBalancer: {}

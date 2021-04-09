@@ -1,0 +1,14 @@
+apiVersion: ita.cr.exastro/v1alpha1
+kind: Instance
+metadata:
+  name: it-automation2
+spec:
+  # Add fields here
+  replicas: 1
+  releasedVersion: "localhost:15000/sutokaz/it-automation-operator:latest"
+  storage0: 2
+  storage1: 2
+  ports:
+    - name: "10088"
+      port: 10088
+      targetPort: 80

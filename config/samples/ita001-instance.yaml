@@ -1,0 +1,22 @@
+apiVersion: ita.cr.exastro/v1alpha1
+kind: Instance
+metadata:
+  name: it-automation
+  namespace: myproject
+spec:
+  selector:
+    matchLabels:
+      app: it-automation
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: it-automation
+    spec:
+      containers:
+        - name: it-automation
+          image: exastro/it-automation:1.5.0-ja
+          ports:
+            - containerPort: 10080
+            - containerPort: 10443 
+status: {}

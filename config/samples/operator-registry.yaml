@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: operator-registry
+  labels:
+    app: operator-registry
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: operator-registry
+  template:
+    metadata:
+      labels:
+        app: operator-registry
+    spec:
+      hostNetwork: true
+      tolerations:
+      - key: node-role.kubernetes.io/master
+        effect: NoSchedule
+      nodeSelector:
+        kubernetes.io/hostname: k8s-m1
+      containers:
+      - name: operator-registry
+        image: registry:2.7
+        ports:
+        - containerPort: 5000
+        volumeMounts:
+        - name: registry
+          mountPath: /var/lib/registry
+      volumes:
+      - name: registry
+        hostPath:
+          type: Directory
+          path: /var/lib/registry

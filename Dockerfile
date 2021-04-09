@@ -1,5 +1,4 @@
-# Build the manager binary
-FROM golang:1.15 as builder
+FROM golang:1.15 as builderd
 
 WORKDIR /workspace
 # Copy the Go Modules manifests
@@ -19,9 +18,13 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 GO111MODULE=on go build -a -o manager 
 
 # Use distroless as minimal base image to package the manager binary
 # Refer to https://github.com/GoogleContainerTools/distroless for more details
-FROM gcr.io/distroless/static:nonroot
+# FROM gcr.io/distroless/static:nonroot
+#FROM registry.access.redhat.com/ubi8/ubi-minimal:latests
+FROM centos
 WORKDIR /
 COPY --from=builder /workspace/manager .
 USER 65532:65532
+# add mysql cli
+RUN yum install -f mariadb-connector-c
 
 ENTRYPOINT ["/manager"]

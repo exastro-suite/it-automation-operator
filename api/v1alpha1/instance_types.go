@@ -28,20 +28,59 @@ type InstanceSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 
-	// Foo is an example field of Instance. Edit Instance_types.go to remove/update
-	Foo string `json:"foo,omitempty"`
+	// +kubebuilder:validation:Minimum=1
+	// +kubebuilder:validation:Maximum=2
+	Replicas int32 `json:"replicas,omitempty"`
+
+	// +kubebuilder:validation:Pattern=`^[1-9][0-9]?\.[0-9]\.[0-9](|-ja)$`
+	ReleasedVersion string `json:"releasedVersion,omitempty"`
+
+	// +kubebuilder:default="10.3"
+	// +kubebuilder:validation:Pattern=`^[1-9][0-9]?\.[0-9]$`
+	DbVersion string `json:"dbVersion,omitempty"`
+
+	// +kubebuilder:validation:MinLength=4
+	DbName string `json:"dbName,omitempty"`
+
+	// +kubebuilder:validation:MinLength=8
+	// +kubebuilder:validation:MaxLength=30
+	DbRootPassword string `json:"dbRootPassword,omitempty"`
+
+	// +kubebuilder:validation:MinLength=4
+	// +kubebuilder:validation:MaxLength=30
+	DbUser string `json:"dbUser,omitempty"`
+
+	// +kubebuilder:validation:MinLength=4
+	// +kubebuilder:validation:MaxLength=20
+	DbPassword string `json:"dbPassword,omitempty"`
+
+	// +kubebuilder:validation:MinLength=4
+	// +kubebuilder:validation:MLength=30
+	DbStorageName string `json:"dbStorageName,omitempty"`
+
+	// +kubebuilder:validation:MinLength=4
+	// +kubebuilder:validation:MaxLength=30
+	ItaStorageName string `json:"itaStorageName,omitempty"`
 }
 
 // InstanceStatus defines the observed state of Instance
 type InstanceStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
+	Nodes []string `json:"nodes"`
 }
 
 // +kubebuilder:object:root=true
 // +kubebuilder:subresource:status
 
 // Instance is the Schema for the instances API
+// +kubebuilder:subresource:status
+// +kubebuilder:printcolumn:name="Replicas",type=string,JSONPath=`.spec.replicas`
+// +kubebuilder:printcolumn:name="Released",type=string,JSONPath=`.spec.releasedVersion`
+// +kubebuilder:printcolumn:name="DbVer",type=string,JSONPath=`.spec.dbVersion`
+// +kubebuilder:printcolumn:name="Storage0",type=string,JSONPath=`.spec.storage0`
+// +kubebuilder:printcolumn:name="Storage1",type=string,JSONPath=`.spec.storage1`
+// +kubebuilder:printcolumn:name="Age",type=date,JSONPath=`.metadata.creationTimestamp`
 type Instance struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
