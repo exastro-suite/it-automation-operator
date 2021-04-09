@@ -113,24 +113,27 @@ func (r *InstanceReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 	// if errSvc != nil && errors.IsNotFound(errSvc) {
 	// 	fmt.Printf("%+v\n", errSvc)
 	// }
-	// svc := &corev1.Service{
-	// 	ObjectMeta: metav1.ObjectMeta{
-	// 		Name:      instance.Name,
-	// 		Namespace: instance.Namespace,
-	// 	},
-	// 	// Spec: corev1.ServiceSpec{
-	// 	// 	Ports: []corev1.ServicePort{
-	// 	// 		{
-	// 	// 			Port:       int32(80),
-	// 	// 			TargetPort: int32(80),
-	// 	// 			Name:       "http",
-	// 	// 		},
-
-	// 	// 	},
-	// 	// },
-	// }
-	// fmt.Println(svc)
-	// fmt.Println(instance.Spec.svcPorts)
+	svc := &corev1.Service{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      instance.Name,
+			Namespace: instance.Namespace,
+		},
+		Spec: corev1.ServiceSpec{
+			Ports: []corev1.ServicePort{
+				{
+					Protocol: "TCP",
+					// Port:       80,
+					// TargetPort: 80,
+					Port: instance.Spec.Ports,
+					// TargetPort: instance.Spec.TargetPorts,
+					Name: "http",
+				},
+			},
+		},
+	}
+	fmt.Println(svc)
+	fmt.Println(instance.Spec.Ports)
+	fmt.Println(instance.Spec.TargetPorts)
 
 	// デプロイメントサイズが仕様と同じであることを確認
 	size := instance.Spec.Replicas
@@ -216,32 +219,32 @@ func (r *InstanceReconciler) deploymentForInstance(m *itav1alpha1.Instance) *app
 						Name:    "ita001-init",
 						Image:   fmt.Sprintf("exastro/it-automation:%s", m.Spec.ReleasedVersion),
 						Command: []string{"/bin/sh", "-c", "chown -R mysql. /var/lib/mysql"},
-						VolumeMounts: []corev1.VolumeMount{{
-							Name:      "mysql-persistent-storage",
-							MountPath: "/var/lib/mysql",
-						}},
+						// VolumeMounts: []corev1.VolumeMount{{
+						// 	Name:      "mysql-persistent-storage",
+						// 	MountPath: "/var/lib/mysql",
+						// }},
 					}},
 					Containers: []corev1.Container{{
 						Name:  "ita001",
 						Image: fmt.Sprintf("exastro/it-automation:%s", m.Spec.ReleasedVersion),
-						Env: []corev1.EnvVar{
-							{
-								Name:  "MYSQL_ROOT_PASSWORD",
-								Value: m.Spec.DbRootPassword,
-							},
-							{
-								Name:  "MYSQL_USER",
-								Value: m.Spec.DbUser,
-							},
-							{
-								Name:  "MYSQL_PASSWORD",
-								Value: m.Spec.DbPassword,
-							},
-							{
-								Name:  "MYSQL_ALLOW_EMPTY_PASSWORD",
-								Value: "true",
-							},
-						},
+						// Env: []corev1.EnvVar{
+						// 	{
+						// 		Name:  "MYSQL_ROOT_PASSWORD",
+						// 		Value: m.Spec.DbRootPassword,
+						// 	},
+						// 	{
+						// 		Name:  "MYSQL_USER",
+						// 		Value: m.Spec.DbUser,
+						// 	},
+						// 	{
+						// 		Name:  "MYSQL_PASSWORD",
+						// 		Value: m.Spec.DbPassword,
+						// 	},
+						// 	{
+						// 		Name:  "MYSQL_ALLOW_EMPTY_PASSWORD",
+						// 		Value: "true",
+						// 	},
+						// },
 						// Command: []string{"/bin/sh", "-c", "echo", "hello world."},
 						Ports: []corev1.ContainerPort{
 							{
@@ -266,14 +269,14 @@ func (r *InstanceReconciler) deploymentForInstance(m *itav1alpha1.Instance) *app
 						// }},
 					}},
 					RestartPolicy: "Always",
-					Volumes: []corev1.Volume{{
-						Name: "mysql-persistent-storage",
-						VolumeSource: corev1.VolumeSource{
-							PersistentVolumeClaim: &corev1.PersistentVolumeClaimVolumeSource{
-								ClaimName: m.Spec.DbStorageName,
-							},
-						},
-					}},
+					// Volumes: []corev1.Volume{{
+					// 	Name: "mysql-persistent-storage",
+					// 	VolumeSource: corev1.VolumeSource{
+					// 		PersistentVolumeClaim: &corev1.PersistentVolumeClaimVolumeSource{
+					// 			ClaimName: m.Spec.DbStorageName,
+					// 		},
+					// 	},
+					// }},
 				},
 			},
 		},

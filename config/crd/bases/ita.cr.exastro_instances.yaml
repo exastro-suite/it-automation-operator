@@ -81,12 +81,22 @@ spec:
                 maxLength: 30
                 minLength: 4
                 type: string
+              ports:
+                format: int32
+                maximum: 65535
+                minimum: 1
+                type: integer
               releasedVersion:
                 pattern: ^[1-9][0-9]?\.[0-9]\.[0-9](|-ja)$
                 type: string
               replicas:
                 format: int32
                 maximum: 2
+                minimum: 1
+                type: integer
+              targetPorts:
+                format: int32
+                maximum: 65535
                 minimum: 1
                 type: integer
             type: object

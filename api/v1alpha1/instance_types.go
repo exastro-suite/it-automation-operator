@@ -61,6 +61,14 @@ type InstanceSpec struct {
 	// +kubebuilder:validation:MinLength=4
 	// +kubebuilder:validation:MaxLength=30
 	ItaStorageName string `json:"itaStorageName,omitempty"`
+
+	// +kubebuilder:validation:Minimum=1
+	// +kubebuilder:validation:Maximum=65535
+	Ports int32 `json:"ports,omitempty"`
+
+	// +kubebuilder:validation:Minimum=1
+	// +kubebuilder:validation:Maximum=65535
+	TargetPorts int32 `json:"targetPorts,omitempty"`
 }
 
 // InstanceStatus defines the observed state of Instance

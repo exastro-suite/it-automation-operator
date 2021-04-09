@@ -9,13 +9,15 @@ spec:
   dbRootPassword: "ita_root_password"
   dbUser: "ita_user"
   dbPassword: "ita_user_password"
-  ports:
-    - name: "10088"
-      port: 10088
-      targetPort: 80
-    - name: "10483"
-      port: 10483
-      targetPort: 443
+  # ports:
+  #   - name: "10088"
+  #     port: 10088
+  #     targetPort: 80
+  #   - name: "10483"
+  #     port: 10483
+  #     targetPort: 443
   dbStorageName: "registry-claim0"
   itaStorageName: "registry-claim1"
   dbName: "aaaa"
+  ports: 80
+  targetPorts: 80
