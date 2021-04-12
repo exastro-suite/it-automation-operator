@@ -98,10 +98,8 @@ func (r *InstanceReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 		log.Error(err, "Failed to get Deployment")
 		return ctrl.Result{}, err
 	}
-
+	// サービスがすでに存在するかどうかを確認し、存在しない場合は新しいサービスを作成
 	foundSvc := &corev1.Service{}
-	fmt.Println("---foundSvc---")
-	fmt.Println(foundSvc)
 	err = r.Get(ctx, types.NamespacedName{Name: instance.Name, Namespace: instance.Namespace}, foundSvc)
 	if err != nil && errors.IsNotFound(err) {
 		// Define a new service
@@ -112,8 +110,6 @@ func (r *InstanceReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 			log.Error(err, "Failed to create new Service", "Service.Namespace", svc.Namespace, "Service.Name", svc.Name)
 			return ctrl.Result{}, err
 		}
-		fmt.Println("------")
-		fmt.Println(svc)
 	}
 
 	// デプロイメントサイズが仕様と同じであることを確認
@@ -157,7 +153,8 @@ func (r *InstanceReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 }
 
 func labelsForInstance(name string) map[string]string {
-	return map[string]string{"app": "Instance", "Instance_cr": name}
+	return map[string]string{"app": name, "Instance_cr": name}
+	// return map[string]string{"app": "Instance", "Instance_cr": name}
 }
 
 // 渡されたポッドの配列のポッド名を返却
@@ -269,27 +266,47 @@ func (r *InstanceReconciler) deploymentForInstance(m *itav1alpha1.Instance) *app
 
 // DeploymentForInstanceはインスタンスDeploymentオブジェクトを返却
 func (r *InstanceReconciler) serviceForInstance(m *itav1alpha1.Instance) *corev1.Service {
-	
-	// fmt.Println("---\n")
-	// fmt.Println(m.Spec.TargetPorts)
+	ls := labelsForInstance(m.Name)
+
+	fmt.Println("---label--")
+	fmt.Println(ls)
+	fmt.Println("-----")
+
 	svc := &corev1.Service{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      m.Name,
 			Namespace: m.Namespace,
+			Labels:    ls,
 		},
 		Spec: corev1.ServiceSpec{
+			// Selector: &metav1.LabelSelector{
+			// 	MatchLabels: ls,
+			// },
 			Ports: []corev1.ServicePort{
 				{
 					Protocol: "TCP",
-					// Port:       80,
-					// TargetPort: 80,
-					Port: m.Spec.Ports,
-					// TargetPort: instance.Spec.TargetPorts,
+					Port:     80,
+					// Port: m.Spec.Ports,
 					Name: "http",
+				},
+				{
+					Protocol: "TCP",
+					Port:     443,
+					Name:     "https",
+				},
+				{
+					Protocol: "TCP",
+					Port:     3306,
+					Name:     "mysql",
 				},
 			},
 		},
 	}
+	fmt.Println("------")
+	fmt.Println(svc)
+	// fmt.Println("---myPorts---")
+	// fmt.Println(m.Spec.Knights)
+
 	return svc
 }
 
