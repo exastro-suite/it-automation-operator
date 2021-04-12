@@ -38,7 +38,9 @@ spec:
     name: v1alpha1
     schema:
       openAPIV3Schema:
-        description: Instance is the Schema for the instances API
+        description: Instance is the Schema for the instances API // +kubebuilder:printcolumn:name="Bravely
+          Run Away",type=boolean,JSONPath=`.spec.targetPorts[?(@ == "Sir Robin")]`,description="when
+          danger rears its ugly head, he bravely turned his tail and fled",priority=10
         properties:
           apiVersion:
             description: 'APIVersion defines the versioned schema of this representation
@@ -92,11 +94,6 @@ spec:
               replicas:
                 format: int32
                 maximum: 2
-                minimum: 1
-                type: integer
-              targetPorts:
-                format: int32
-                maximum: 65535
                 minimum: 1
                 type: integer
             type: object

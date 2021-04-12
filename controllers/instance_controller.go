@@ -80,15 +80,6 @@ func (r *InstanceReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 		return ctrl.Result{}, err
 	}
 
-	// fmt.Println("処理開始: ")
-	// out, err := exec.Command("ls", "-la", "/").Output()
-	// // out, err := exec.Command("pwd").Output()
-	// if err != nil {
-	// 	// log.Fatal("err found")
-	// }
-	// fmt.Println(out)
-	// fmt.Println("sleep終了: ")
-
 	// デプロイメントがすでに存在するかどうかを確認し、存在しない場合は新しいデプロイメントを作成
 	found := &appsv1.Deployment{}
 	err = r.Get(ctx, types.NamespacedName{Name: instance.Name, Namespace: instance.Namespace}, found)
@@ -108,32 +99,22 @@ func (r *InstanceReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 		return ctrl.Result{}, err
 	}
 
-	// foundSvc := &appsv1.Service{}
-	// errSvc = r.Get(ctx, types.NamespacedName{Name: instance.Name, Namespace: instance.Namespace}, foundSvc)
-	// if errSvc != nil && errors.IsNotFound(errSvc) {
-	// 	fmt.Printf("%+v\n", errSvc)
-	// }
-	svc := &corev1.Service{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      instance.Name,
-			Namespace: instance.Namespace,
-		},
-		Spec: corev1.ServiceSpec{
-			Ports: []corev1.ServicePort{
-				{
-					Protocol: "TCP",
-					// Port:       80,
-					// TargetPort: 80,
-					Port: instance.Spec.Ports,
-					// TargetPort: instance.Spec.TargetPorts,
-					Name: "http",
-				},
-			},
-		},
+	foundSvc := &corev1.Service{}
+	fmt.Println("---foundSvc---")
+	fmt.Println(foundSvc)
+	err = r.Get(ctx, types.NamespacedName{Name: instance.Name, Namespace: instance.Namespace}, foundSvc)
+	if err != nil && errors.IsNotFound(err) {
+		// Define a new service
+		svc := r.serviceForInstance(instance)
+		log.Info("Creating a new Service", "Service.Namespace", instance.Namespace, "Service.Name", instance.Name)
+		err = r.Create(ctx, svc)
+		if err != nil {
+			log.Error(err, "Failed to create new Service", "Service.Namespace", svc.Namespace, "Service.Name", svc.Name)
+			return ctrl.Result{}, err
+		}
+		fmt.Println("------")
+		fmt.Println(svc)
 	}
-	fmt.Println(svc)
-	fmt.Println(instance.Spec.Ports)
-	fmt.Println(instance.Spec.TargetPorts)
 
 	// デプロイメントサイズが仕様と同じであることを確認
 	size := instance.Spec.Replicas
@@ -286,11 +267,37 @@ func (r *InstanceReconciler) deploymentForInstance(m *itav1alpha1.Instance) *app
 	return dep
 }
 
+// DeploymentForInstanceはインスタンスDeploymentオブジェクトを返却
+func (r *InstanceReconciler) serviceForInstance(m *itav1alpha1.Instance) *corev1.Service {
+	
+	// fmt.Println("---\n")
+	// fmt.Println(m.Spec.TargetPorts)
+	svc := &corev1.Service{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      m.Name,
+			Namespace: m.Namespace,
+		},
+		Spec: corev1.ServiceSpec{
+			Ports: []corev1.ServicePort{
+				{
+					Protocol: "TCP",
+					// Port:       80,
+					// TargetPort: 80,
+					Port: m.Spec.Ports,
+					// TargetPort: instance.Spec.TargetPorts,
+					Name: "http",
+				},
+			},
+		},
+	}
+	return svc
+}
+
 func (r *InstanceReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&itav1alpha1.Instance{}).
 		Owns(&appsv1.Deployment{}).
-		// Owns(&appsv1.Service{}).
+		Owns(&corev1.Service{}).
 		// WithOptions(controller.Options{
 		// 	MaxConcurrentReconciles: 2,
 		// }).

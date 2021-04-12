@@ -65,10 +65,6 @@ type InstanceSpec struct {
 	// +kubebuilder:validation:Minimum=1
 	// +kubebuilder:validation:Maximum=65535
 	Ports int32 `json:"ports,omitempty"`
-
-	// +kubebuilder:validation:Minimum=1
-	// +kubebuilder:validation:Maximum=65535
-	TargetPorts int32 `json:"targetPorts,omitempty"`
 }
 
 // InstanceStatus defines the observed state of Instance
@@ -88,6 +84,7 @@ type InstanceStatus struct {
 // +kubebuilder:printcolumn:name="DbVer",type=string,JSONPath=`.spec.dbVersion`
 // +kubebuilder:printcolumn:name="Storage0",type=string,JSONPath=`.spec.storage0`
 // +kubebuilder:printcolumn:name="Storage1",type=string,JSONPath=`.spec.storage1`
+// // +kubebuilder:printcolumn:name="Bravely Run Away",type=boolean,JSONPath=`.spec.targetPorts[?(@ == "Sir Robin")]`,description="when danger rears its ugly head, he bravely turned his tail and fled",priority=10
 // +kubebuilder:printcolumn:name="Age",type=date,JSONPath=`.metadata.creationTimestamp`
 type Instance struct {
 	metav1.TypeMeta   `json:",inline"`

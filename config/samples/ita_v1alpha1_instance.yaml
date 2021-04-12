@@ -20,4 +20,5 @@ spec:
   itaStorageName: "registry-claim1"
   dbName: "aaaa"
   ports: 80
-  targetPorts: 80
+  myPorts:
+    - 80
