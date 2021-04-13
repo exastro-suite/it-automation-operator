@@ -182,6 +182,7 @@ func (r *InstanceReconciler) deploymentForInstance(m *itav1alpha1.Instance) *app
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      m.Name,
 			Namespace: m.Namespace,
+			Labels:    ls,
 		},
 		Spec: appsv1.DeploymentSpec{
 			Replicas: &replicas,
