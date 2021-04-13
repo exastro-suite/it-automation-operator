@@ -19,12 +19,11 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 GO111MODULE=on go build -a -o manager 
 # Use distroless as minimal base image to package the manager binary
 # Refer to https://github.com/GoogleContainerTools/distroless for more details
 # FROM gcr.io/distroless/static:nonroot
-#FROM registry.access.redhat.com/ubi8/ubi-minimal:latests
-FROM centos
+FROM registry.access.redhat.com/ubi8/ubi:latest
 WORKDIR /
 COPY --from=builder /workspace/manager .
-USER 65532:65532
+#USER 65532:65532
 # add mysql cli
-RUN yum install -f mariadb-connector-c
+RUN curl -sS https://downloads.mariadb.com/MariaDB/mariadb_repo_setup | bash && yum update -y && yum install -y MariaDB-client
 
 ENTRYPOINT ["/manager"]
