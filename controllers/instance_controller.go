@@ -265,7 +265,7 @@ func (r *InstanceReconciler) deploymentForInstance(m *itav1alpha1.Instance) *app
 	return dep
 }
 
-// DeploymentForInstanceはインスタンスDeploymentオブジェクトを返却
+// ServiceForInstanceはインスタンスServiceオブジェクトを返却
 func (r *InstanceReconciler) serviceForInstance(m *itav1alpha1.Instance) *corev1.Service {
 	ls := labelsForInstance(m.Name)
 
@@ -280,9 +280,7 @@ func (r *InstanceReconciler) serviceForInstance(m *itav1alpha1.Instance) *corev1
 			Labels:    ls,
 		},
 		Spec: corev1.ServiceSpec{
-			// Selector: &metav1.LabelSelector{
-			// 	MatchLabels: ls,
-			// },
+			Selector: ls,
 			Ports: []corev1.ServicePort{
 				{
 					Protocol: "TCP",
