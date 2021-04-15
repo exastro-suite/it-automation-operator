@@ -19,8 +19,9 @@ package controllers
 import (
 	"context"
 	"fmt"
+
 	// "os/exec"
-	"reflect"
+	// "reflect"
 	"strings"
 
 	"github.com/go-logr/logr"
@@ -113,40 +114,40 @@ func (r *InstanceReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 	}
 
 	// デプロイメントサイズが仕様と同じであることを確認
-	size := instance.Spec.Replicas
-	if *found.Spec.Replicas != size {
-		found.Spec.Replicas = &size
-		err = r.Update(ctx, found)
-		if err != nil {
-			log.Error(err, "Failed to update Deployment", "Deployment.Namespace", found.Namespace, "Deployment.Name", found.Name)
-			return ctrl.Result{}, err
-		}
-		// Spec updated - return and requeue
-		return ctrl.Result{Requeue: true}, nil
-	}
+	// size := instance.Spec.Replicas
+	// if *found.Spec.Replicas != size {
+	// 	found.Spec.Replicas = &size
+	// 	err = r.Update(ctx, found)
+	// 	if err != nil {
+	// 		log.Error(err, "Failed to update Deployment", "Deployment.Namespace", found.Namespace, "Deployment.Name", found.Name)
+	// 		return ctrl.Result{}, err
+	// 	}
+	// 	// Spec updated - return and requeue
+	// 	return ctrl.Result{Requeue: true}, nil
+	// }
 
 	// Instanceステータスをポッド名で更新
 	// このinstanceのデプロイのポッドを一覧表示
-	podList := &corev1.PodList{}
-	listOpts := []client.ListOption{
-		client.InNamespace(instance.Namespace),
-		client.MatchingLabels(labelsForInstance(instance.Name)),
-	}
-	if err = r.List(ctx, podList, listOpts...); err != nil {
-		log.Error(err, "Failed to list pods", "Instance.Namespace", instance.Namespace, "Instance.Name", instance.Name)
-		return ctrl.Result{}, err
-	}
-	podNames := getPodNames(podList.Items)
+	// podList := &corev1.PodList{}
+	// listOpts := []client.ListOption{
+	// 	client.InNamespace(instance.Namespace),
+	// 	client.MatchingLabels(labelsForInstance(instance.Name)),
+	// }
+	// if err = r.List(ctx, podList, listOpts...); err != nil {
+	// 	log.Error(err, "Failed to list pods", "Instance.Namespace", instance.Namespace, "Instance.Name", instance.Name)
+	// 	return ctrl.Result{}, err
+	// }
+	// podNames := getPodNames(podList.Items)
 
 	// Update status.Nodes if needed
-	if !reflect.DeepEqual(podNames, instance.Status.Nodes) {
-		instance.Status.Nodes = podNames
-		err := r.Status().Update(ctx, instance)
-		if err != nil {
-			log.Error(err, "Failed to update Instance status")
-			return ctrl.Result{}, err
-		}
-	}
+	// if !reflect.DeepEqual(podNames, instance.Status.Nodes) {
+	// 	instance.Status.Nodes = podNames
+	// 	err := r.Status().Update(ctx, instance)
+	// 	if err != nil {
+	// 		log.Error(err, "Failed to update Instance status")
+	// 		return ctrl.Result{}, err
+	// 	}
+	// }
 
 	fmt.Printf("\n<--------------------\n")
 	return ctrl.Result{}, nil
@@ -166,17 +167,19 @@ func getPodNames(pods []corev1.Pod) []string {
 	return podNames
 }
 
+func int64Ptr(i int64) *int64 { return &i }
+
 // DeploymentForInstanceはインスタンスDeploymentオブジェクトを返却
 func (r *InstanceReconciler) deploymentForInstance(m *itav1alpha1.Instance) *appsv1.Deployment {
 	ls := labelsForInstance(m.Name)
 	replicas := m.Spec.Replicas
 
-	// tmp := corev1
-	// fmt.Printf("%+v", tmp)
+	// test start
 	cmdlist := []string{
 		"ls -l",
 	}
 	fmt.Println(strings.Join(cmdlist, ";"))
+	// test end
 
 	dep := &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
@@ -197,11 +200,11 @@ func (r *InstanceReconciler) deploymentForInstance(m *itav1alpha1.Instance) *app
 					InitContainers: []corev1.Container{{
 						Name:    "ita001-init",
 						Image:   fmt.Sprintf("exastro/it-automation:%s", m.Spec.ReleasedVersion),
-						Command: []string{"/bin/sh", "-c", "chown -R mysql. /var/lib/mysql"},
-						// VolumeMounts: []corev1.VolumeMount{{
-						// 	Name:      "mysql-persistent-storage",
-						// 	MountPath: "/var/lib/mysql",
-						// }},
+						Command: []string{"/bin/sh", "-c", "if [ -d /var/lib/mysql ]; then chown -R mysql. /var/lib/mysql; fi"},
+						// 	VolumeMounts: []corev1.VolumeMount{{
+						// 		Name:      "mysql-persistent-storage",
+						// 		MountPath: "/var/lib/mysql",
+						// 	}},
 					}},
 					Containers: []corev1.Container{{
 						Name:  "ita001",
@@ -239,14 +242,14 @@ func (r *InstanceReconciler) deploymentForInstance(m *itav1alpha1.Instance) *app
 								Name:          "mysql",
 							},
 						},
-						// SecurityContext: []corev1.SecurityContext{{
-						// 	privileged: true,
-						// }},
 						// VolumeMounts: []corev1.VolumeMount{{
 						// 	Name:      "mysql-persistent-storage",
 						// 	MountPath: "/var/lib/mysql",
 						// }},
 					}},
+					SecurityContext: &corev1.PodSecurityContext{
+						RunAsUser: int64Ptr(0),
+					},
 					RestartPolicy: "Always",
 					// Volumes: []corev1.Volume{{
 					// 	Name: "mysql-persistent-storage",
@@ -301,11 +304,6 @@ func (r *InstanceReconciler) serviceForInstance(m *itav1alpha1.Instance) *corev1
 			},
 		},
 	}
-	fmt.Println("------")
-	fmt.Println(svc)
-	// fmt.Println("---myPorts---")
-	// fmt.Println(m.Spec.Knights)
-
 	return svc
 }
 
