@@ -168,7 +168,7 @@ func getPodNames(pods []corev1.Pod) []string {
 }
 
 func int64Ptr(i int64) *int64 { return &i }
-func boolPtr(b bool) *bool { return &b }
+func boolPtr(b bool) *bool    { return &b }
 
 // DeploymentForInstanceはインスタンスDeploymentオブジェクトを返却
 func (r *InstanceReconciler) deploymentForInstance(m *itav1alpha1.Instance) *appsv1.Deployment {
@@ -248,15 +248,19 @@ func (r *InstanceReconciler) deploymentForInstance(m *itav1alpha1.Instance) *app
 								Name:          "mysql",
 							},
 						},
+						SecurityContext: &corev1.SecurityContext{
+							// RunAsUser: int64Ptr(0),
+							Privileged: boolPtr(true),
+						},
 						// VolumeMounts: []corev1.VolumeMount{{
 						// 	Name:      "mysql-persistent-storage",
 						// 	MountPath: "/var/lib/mysql",
 						// }},
 					}},
-					SecurityContext: &corev1.PodSecurityContext{
-						// RunAsUser: int64Ptr(0),
-						Privileged: boolPtr(true),
-					},
+					// SecurityContext: &corev1.PodSecurityContext{
+					// 	// RunAsUser: int64Ptr(0),
+					// 	Privileged: boolPtr(true),
+					// },
 					RestartPolicy: "Always",
 					// Volumes: []corev1.Volume{{
 					// 	Name: "mysql-persistent-storage",
