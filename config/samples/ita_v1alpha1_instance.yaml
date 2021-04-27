@@ -1,7 +1,17 @@
 apiVersion: ita.cr.exastro/v1alpha1
 kind: Instance
 metadata:
-  name: instance-sample
+  name: it-automation
 spec:
   # Add fields here
-  foo: bar
+  replicas: 1
+  releasedVersion: "1.6.3-ja"
+  dbRootPassword: "ita_root_password"
+  dbUser: "ita_user"
+  dbPassword: "ita_user_password"
+  dbStorageName: "registry-claim1"
+  itaStorageName: "registry-claim2"
+  dbName: "aaaa"
+  # ports: 80
+  # myPorts:
+  #   - 80

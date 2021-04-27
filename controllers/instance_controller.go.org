@@ -19,11 +19,9 @@ package controllers
 import (
 	"context"
 	"fmt"
-	"reflect"
-
 	// "os/exec"
-
-	// "strings"
+	"reflect"
+	"strings"
 
 	"github.com/go-logr/logr"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -176,17 +174,12 @@ func (r *InstanceReconciler) deploymentForInstance(m *itav1alpha1.Instance) *app
 	ls := labelsForInstance(m.Name)
 	replicas := m.Spec.Replicas
 
-	// tmp := corev1
-	// fmt.Printf("%+v", tmp)
-	// cmdlist := []string{
-	// 	"ls -l",
-	// }
-	// fmt.Println(strings.Join(cmdlist, ";"))
-	fmt.Println("------")
-	configMaplist := &corev1.ConfigMapList{}
-	fmt.Println(configMaplist)
-	// getConfigMap()
-	fmt.Println("------")
+	// test start
+	fmt.Println()
+	cmdlist := []string{
+		"ls -l",
+	}
+	fmt.Println(strings.Join(cmdlist, ";"))
 
 	dep := &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
@@ -204,46 +197,38 @@ func (r *InstanceReconciler) deploymentForInstance(m *itav1alpha1.Instance) *app
 					Labels: ls,
 				},
 				Spec: corev1.PodSpec{
-					InitContainers: []corev1.Container{
-						{
-							Name:    "ita001-init",
-							Image:   fmt.Sprintf("exastro/it-automation:%s", m.Spec.ReleasedVersion),
-							Command: []string{"/bin/sh"},
-							Args: []string{
-								"-c",
-								"if [ -d /var/lib/mysql ]; then chown -R mysql. /var/lib/mysql; fi",
-								// "systemctl restart mariadb",
-								// "while [ ! -e /var/lib/mysql/mysql.sock ]; do sleep 1; done",
-								// "mysql -uroot -hlocalhost --password=ita_root_password -e 'create database foobardb;'",
-								// "touch /var/lib/mysql/initialized.txt",
-							},
-							VolumeMounts: []corev1.VolumeMount{{
-								Name:      "mysql-persistent-storage",
-								MountPath: "/var/lib/mysql",
-							}},
-						},
-					},
+					// InitContainers: []corev1.Container{{
+					// 	Name:    "ita001-init",
+					// 	Image:   fmt.Sprintf("exastro/it-automation:%s", m.Spec.ReleasedVersion),
+					// 	ImagePullPolicy: corev1.PullIfNotPresent,
+					// 	Command: []string{"/bin/sh", "-c", "if [ -d /var/lib/mysql ]; then chown -R mysql. /var/lib/mysql; fi"},
+					// 	// 	VolumeMounts: []corev1.VolumeMount{{
+					// 	// 		Name:      "mysql-persistent-storage",
+					// 	// 		MountPath: "/var/lib/mysql",
+					// 	// 	}},
+					// }},
 					Containers: []corev1.Container{{
-						Name:  "ita001",
-						Image: fmt.Sprintf("exastro/it-automation:%s", m.Spec.ReleasedVersion),
-						Env: []corev1.EnvVar{
-							{
-								Name:  "MYSQL_ROOT_PASSWORD",
-								Value: m.Spec.DbRootPassword,
-							},
-							{
-								Name:  "MYSQL_USER",
-								Value: m.Spec.DbUser,
-							},
-							{
-								Name:  "MYSQL_PASSWORD",
-								Value: m.Spec.DbPassword,
-							},
-							// {
-							// 	Name:  "MYSQL_ALLOW_EMPTY_PASSWORD",
-							// 	Value: "true",
-							// },
-						},
+						Name:            "ita001",
+						Image:           fmt.Sprintf("exastro/it-automation:%s", m.Spec.ReleasedVersion),
+						ImagePullPolicy: corev1.PullIfNotPresent,
+						// Env: []corev1.EnvVar{
+						// 	{
+						// 		Name:  "MYSQL_ROOT_PASSWORD",
+						// 		Value: m.Spec.DbRootPassword,
+						// 	},
+						// 	{
+						// 		Name:  "MYSQL_USER",
+						// 		Value: m.Spec.DbUser,
+						// 	},
+						// 	{
+						// 		Name:  "MYSQL_PASSWORD",
+						// 		Value: m.Spec.DbPassword,
+						// 	},
+						// 	{
+						// 		Name:  "MYSQL_ALLOW_EMPTY_PASSWORD",
+						// 		Value: "true",
+						// 	},
+						// },
 						// Command: []string{"/bin/sh", "-c", "echo", "hello world."},
 						Ports: []corev1.ContainerPort{
 							{
@@ -259,28 +244,30 @@ func (r *InstanceReconciler) deploymentForInstance(m *itav1alpha1.Instance) *app
 								Name:          "mysql",
 							},
 						},
-						// SecurityContext: &corev1.SecurityContext{
-						// 	// RunAsUser: int64Ptr(0),
-						// 	Privileged: boolPtr(true),
-						// },
-						VolumeMounts: []corev1.VolumeMount{{
-							Name:      "mysql-persistent-storage",
-							MountPath: "/var/lib/mysql",
-						}},
-					}},
-					// SecurityContext: &corev1.PodSecurityContext{
-					// 	// RunAsUser: int64Ptr(0),
-					// 	Privileged: boolPtr(true),
-					// },
-					RestartPolicy: "Always",
-					Volumes: []corev1.Volume{{
-						Name: "mysql-persistent-storage",
-						VolumeSource: corev1.VolumeSource{
-							PersistentVolumeClaim: &corev1.PersistentVolumeClaimVolumeSource{
-								ClaimName: m.Spec.DbStorageName,
+						Lifecycle: &corev1.Lifecycle{
+							PostStart: &corev1.Handler{
+								Exec: &corev1.ExecAction{
+									Command: []string{"/bin/sh", "-c", "if [ -d /var/lib/mysql ]; then chown -R mysql. /var/lib/mysql; fi"},
+								},
 							},
 						},
+						// VolumeMounts: []corev1.VolumeMount{{
+						// 	Name:      "mysql-persistent-storage",
+						// 	MountPath: "/var/lib/mysql",
+						// }},
 					}},
+					// SecurityContext: &corev1.PodSecurityContext{
+					// 	FSGroup: int64Ptr(1000),
+					// },
+					RestartPolicy: "Always",
+					// Volumes: []corev1.Volume{{
+					// 	Name: "mysql-persistent-storage",
+					// 	VolumeSource: corev1.VolumeSource{
+					// 		PersistentVolumeClaim: &corev1.PersistentVolumeClaimVolumeSource{
+					// 			ClaimName: m.Spec.DbStorageName,
+					// 		},
+					// 	},
+					// }},
 				},
 			},
 		},
@@ -293,6 +280,11 @@ func (r *InstanceReconciler) deploymentForInstance(m *itav1alpha1.Instance) *app
 // ServiceForInstanceはインスタンスServiceオブジェクトを返却
 func (r *InstanceReconciler) serviceForInstance(m *itav1alpha1.Instance) *corev1.Service {
 	ls := labelsForInstance(m.Name)
+
+	fmt.Println("---label--")
+	fmt.Println(ls)
+	fmt.Println("-----")
+
 	svc := &corev1.Service{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      m.Name,
@@ -321,7 +313,6 @@ func (r *InstanceReconciler) serviceForInstance(m *itav1alpha1.Instance) *corev1
 			},
 		},
 	}
-
 	return svc
 }
 

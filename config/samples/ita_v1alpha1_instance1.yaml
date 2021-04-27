@@ -1,0 +1,17 @@
+apiVersion: ita.cr.exastro/v1alpha1
+kind: Instance
+metadata:
+  name: it-automation1
+spec:
+  # Add fields here
+  replicas: 1
+  releasedVersion: "1.5.0-ja"
+  storage0: 2
+  storage1: 2
+  ports:
+    - name: "10088"
+      port: 10088
+      targetPort: 80
+    - name: "10483"
+      port: 10483
+      targetPort: 443

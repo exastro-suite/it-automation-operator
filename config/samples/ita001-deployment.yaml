@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+# apiVersion: ita.cr.exastro/v1alpha1
+# kind: Instance
+metadata:
+  name: it-automation-suto
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: it-automation
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: it-automation
+    spec:
+      containers:
+        - image: exastro/it-automation:1.5.0-ja
+          name: ita001
+          ports:
+            - containerPort: 80
+            - containerPort: 443
+          resources: {}
+          securityContext:
+            privileged: true
+          # volumeMounts:
+          #   # - mountPath: /var/lib/mysql
+          #   #   name: datastore
+          #   - mountPath: /mnt/exastro
+          #     name: webdatastore
+      restartPolicy: Always
+      # volumes:
+      #   # - name: datastore
+      #   #   persistentVolumeClaim:
+      #   #     claimName: datastore
+      #   - name: webdatastore
+      #     persistentVolumeClaim:
+      #       claimName: webdatastore
+status: {}
