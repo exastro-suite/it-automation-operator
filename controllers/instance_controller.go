@@ -204,15 +204,25 @@ func (r *InstanceReconciler) deploymentForInstance(m *itav1alpha1.Instance) *app
 					Labels: ls,
 				},
 				Spec: corev1.PodSpec{
-					InitContainers: []corev1.Container{{
-						Name:    "ita001-init",
-						Image:   fmt.Sprintf("exastro/it-automation:%s", m.Spec.ReleasedVersion),
-						Command: []string{"/bin/sh", "-c", "if [ -d /var/lib/mysql ]; then chown -R mysql. /var/lib/mysql; fi"},
-						// 	VolumeMounts: []corev1.VolumeMount{{
-						// 		Name:      "mysql-persistent-storage",
-						// 		MountPath: "/var/lib/mysql",
-						// 	}},
-					}},
+					InitContainers: []corev1.Container{
+						{
+							Name:    "ita001-init",
+							Image:   fmt.Sprintf("exastro/it-automation:%s", m.Spec.ReleasedVersion),
+							Command: []string{"/bin/sh"},
+							Args: []string{
+								"-c",
+								"if [ -d /var/lib/mysql ]; then chown -R mysql. /var/lib/mysql; fi",
+								// "systemctl restart mariadb",
+								// "while [ ! -e /var/lib/mysql/mysql.sock ]; do sleep 1; done",
+								// "mysql -uroot -hlocalhost --password=ita_root_password -e 'create database foobardb;'",
+								// "touch /var/lib/mysql/initialized.txt",
+							},
+							VolumeMounts: []corev1.VolumeMount{{
+								Name:      "mysql-persistent-storage",
+								MountPath: "/var/lib/mysql",
+							}},
+						},
+					},
 					Containers: []corev1.Container{{
 						Name:  "ita001",
 						Image: fmt.Sprintf("exastro/it-automation:%s", m.Spec.ReleasedVersion),
@@ -253,24 +263,24 @@ func (r *InstanceReconciler) deploymentForInstance(m *itav1alpha1.Instance) *app
 						// 	// RunAsUser: int64Ptr(0),
 						// 	Privileged: boolPtr(true),
 						// },
-						// VolumeMounts: []corev1.VolumeMount{{
-						// 	Name:      "mysql-persistent-storage",
-						// 	MountPath: "/var/lib/mysql",
-						// }},
+						VolumeMounts: []corev1.VolumeMount{{
+							Name:      "mysql-persistent-storage",
+							MountPath: "/var/lib/mysql",
+						}},
 					}},
 					// SecurityContext: &corev1.PodSecurityContext{
 					// 	// RunAsUser: int64Ptr(0),
 					// 	Privileged: boolPtr(true),
 					// },
 					RestartPolicy: "Always",
-					// Volumes: []corev1.Volume{{
-					// 	Name: "mysql-persistent-storage",
-					// 	VolumeSource: corev1.VolumeSource{
-					// 		PersistentVolumeClaim: &corev1.PersistentVolumeClaimVolumeSource{
-					// 			ClaimName: m.Spec.DbStorageName,
-					// 		},
-					// 	},
-					// }},
+					Volumes: []corev1.Volume{{
+						Name: "mysql-persistent-storage",
+						VolumeSource: corev1.VolumeSource{
+							PersistentVolumeClaim: &corev1.PersistentVolumeClaimVolumeSource{
+								ClaimName: m.Spec.DbStorageName,
+							},
+						},
+					}},
 				},
 			},
 		},
