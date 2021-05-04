@@ -103,9 +103,24 @@ vet:
 generate: controller-gen
 	$(CONTROLLER_GEN) object:headerFile="hack/boilerplate.go.txt" paths="./..."
 
+
+ifneq ($(origin ITAOP_EXTRA_ROOT_CA), undefined)
+DOCKER_BUILD_OPT_SECRET := --secret id=extra-root-ca,src=$(ITAOP_EXTRA_ROOT_CA)
+endif
+
 # Build the docker image
 docker-build: test
-	docker build -t ${IMG} .
+	DOCKER_BUILDKIT=1 docker build \
+		--tag ${IMG} \
+		--progress=plain \
+		--build-arg HTTP_PROXY \
+		--build-arg http_proxy \
+		--build-arg HTTPS_PROXY \
+		--build-arg https_proxy \
+		--build-arg NO_PROXY \
+		--build-arg no_proxy \
+		$(DOCKER_BUILD_OPT_SECRET) \
+		.
 
 # Push the docker image
 docker-push:

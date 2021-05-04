@@ -1,5 +1,8 @@
 # Build the manager binary
-FROM golang:1.15 as builder
+FROM golang:1.16 as builder
+
+RUN --mount=type=secret,id=extra-root-ca if [ -f /run/secrets/extra-root-ca ]; then cp /run/secrets/extra-root-ca /usr/local/share/ca-certificates/extra-root-ca.crt; fi
+RUN update-ca-certificates
 
 WORKDIR /workspace
 # Copy the Go Modules manifests
