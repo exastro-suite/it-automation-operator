@@ -28,8 +28,12 @@ type InstanceSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 
-	// Foo is an example field of Instance. Edit Instance_types.go to remove/update
-	Foo string `json:"foo,omitempty"`
+	// +kubebuilder:validation:Pattern=`^[1-9][0-9]*\.[0-9]+\.[0-9]+$`
+	Version string `json:"version,omitempty"`
+
+	// +kubebuilder:validation:MinLength=4
+	// +kubebuilder:validation:MLength=30
+	DatabasePvcName string `json:"databasePvcName,omitempty"`
 }
 
 // InstanceStatus defines the observed state of Instance
@@ -40,7 +44,7 @@ type InstanceStatus struct {
 
 // +kubebuilder:object:root=true
 // +kubebuilder:subresource:status
-
+// +kubebuilder:printcolumn:name="Released",type=string,JSONPath=`.spec.version`
 // Instance is the Schema for the instances API
 type Instance struct {
 	metav1.TypeMeta   `json:",inline"`
