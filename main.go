@@ -80,7 +80,7 @@ func main() {
 
 	if err = (&controllers.InstanceReconciler{
 		Client: mgr.GetClient(),
-		Logger: ctrl.Log.WithName("controllers").WithName("Instance"),
+		Log:    ctrl.Log.WithName("controllers").WithName("Instance"),
 		Scheme: mgr.GetScheme(),
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "Instance")

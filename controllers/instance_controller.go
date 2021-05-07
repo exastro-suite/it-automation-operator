@@ -24,11 +24,10 @@ import (
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
-	"k8s.io/apimachinery/pkg/util/intstr"
-
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
+	"k8s.io/apimachinery/pkg/util/intstr"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
@@ -38,7 +37,7 @@ import (
 // InstanceReconciler reconciles a Instance object
 type InstanceReconciler struct {
 	client.Client
-	Logger logr.Logger
+	Log    logr.Logger
 	Scheme *runtime.Scheme
 }
 
@@ -88,7 +87,7 @@ func makeReturnValuesStop() (bool, ctrl.Result, error) {
 }
 
 func makeReturnValuesRequeue() (bool, ctrl.Result, error) {
-	return true, ctrl.Result{}, nil
+	return true, ctrl.Result{Requeue: true}, nil
 }
 
 func makeReturnValuesRequeueWithError(err error) (bool, ctrl.Result, error) {
@@ -103,11 +102,11 @@ func (reconciler *InstanceReconciler) fetchCustomResource(ctx context.Context, r
 	err := reconciler.Get(ctx, request.NamespacedName, customResource)
 	if err != nil {
 		if errors.IsNotFound(err) {
-			reconciler.Logger.Info("Custom resource not found. Ignoring since object must be deleted")
+			reconciler.Log.Info("Custom resource not found. Ignoring since object must be deleted")
 			return makeReturnValuesStop()
 		}
 
-		reconciler.Logger.Error(err, "Failed to get custom resource")
+		reconciler.Log.Error(err, "Failed to get custom resource")
 		return makeReturnValuesRequeueWithError(err)
 	}
 
@@ -121,23 +120,23 @@ func (reconciler *InstanceReconciler) ensureK8sDeployment(ctx context.Context, r
 		// Define a new deployment
 		k8sDeployment = reconciler.createK8sDeployment(customResource)
 
-		reconciler.Logger.Info("Creating a new Deployment", "Deployment.Namespace", k8sDeployment.Namespace, "Deployment.Name", k8sDeployment.Name)
+		reconciler.Log.Info("Creating a new Deployment", "Deployment.Namespace", k8sDeployment.Namespace, "Deployment.Name", k8sDeployment.Name)
 
 		err = reconciler.Create(ctx, k8sDeployment)
 		if err != nil {
-			reconciler.Logger.Error(err, "Failed to create new Deployment", "Deployment.Namespace", k8sDeployment.Namespace, "Deployment.Name", k8sDeployment.Name)
+			reconciler.Log.Error(err, "Failed to create new Deployment", "Deployment.Namespace", k8sDeployment.Namespace, "Deployment.Name", k8sDeployment.Name)
 			return makeReturnValuesRequeueWithError(err)
 		}
 
 		// Deployment created successfully - return and requeue
 		return makeReturnValuesRequeue()
 	} else if err != nil {
-		reconciler.Logger.Error(err, "Failed to get Deployment")
+		reconciler.Log.Error(err, "Failed to get Deployment")
 		return makeReturnValuesRequeueWithError(err)
 	}
 
 	// Deployment already exists
-	reconciler.Logger.Info("Deployment already exists", "Deployment.Namespace", k8sDeployment.Namespace, "Deployment.Name", k8sDeployment.Name)
+	reconciler.Log.Info("Deployment already exists", "Deployment.Namespace", k8sDeployment.Namespace, "Deployment.Name", k8sDeployment.Name)
 
 	return makeReturnValuesContinue()
 }
@@ -169,37 +168,44 @@ func (reconciler *InstanceReconciler) createK8sDeployment(customResource *itav1a
 							Image: fmt.Sprintf("exastro/it-automation:%s", customResource.Spec.Version),
 							Ports: []corev1.ContainerPort{
 								{
+									Name:          "http",
 									ContainerPort: 80,
 								},
 								{
+									Name:          "https",
 									ContainerPort: 443,
 								},
 								{
+									Name:          "mysql",
 									ContainerPort: 3306,
 								},
 							},
 							SecurityContext: &corev1.SecurityContext{
 								Privileged: &privileged,
 							},
-							VolumeMounts: []corev1.VolumeMount{
-								{
-									Name:      "database-volume",
-									MountPath: "/var/lib/mysql",
+							/*
+								VolumeMounts: []corev1.VolumeMount{
+									{
+										Name:      "database-volume",
+										MountPath: "/var/lib/mysql",
+									},
 								},
-							},
+							*/
 						},
 					},
 					RestartPolicy: "Always",
-					Volumes: []corev1.Volume{
-						{
-							Name: "database-volume",
-							VolumeSource: corev1.VolumeSource{
-								PersistentVolumeClaim: &corev1.PersistentVolumeClaimVolumeSource{
-									ClaimName: customResource.Spec.DatabasePvcName,
+					/*
+						Volumes: []corev1.Volume{
+							{
+								Name: "database-volume",
+								VolumeSource: corev1.VolumeSource{
+									PersistentVolumeClaim: &corev1.PersistentVolumeClaimVolumeSource{
+										ClaimName: customResource.Spec.DatabasePvcName,
+									},
 								},
 							},
 						},
-					},
+					*/
 				},
 			},
 		},
@@ -212,6 +218,29 @@ func (reconciler *InstanceReconciler) createK8sDeployment(customResource *itav1a
 }
 
 func (reconciler *InstanceReconciler) ensureK8sService(ctx context.Context, request ctrl.Request, customResource *itav1alpha1.Instance) (bool, ctrl.Result, error) {
+	k8sService := &corev1.Service{}
+	err := reconciler.Get(ctx, types.NamespacedName{Name: customResource.Name, Namespace: customResource.Namespace}, k8sService)
+	if err != nil && errors.IsNotFound(err) {
+		// Define a new service
+		k8sService = reconciler.createK8sService(customResource)
+
+		reconciler.Log.Info("Creating a new Service", "Service.Namespace", k8sService.Namespace, "Service.Name", k8sService.Name)
+
+		err = reconciler.Create(ctx, k8sService)
+		if err != nil {
+			reconciler.Log.Error(err, "Failed to create new Service", "Service.Namespace", k8sService.Namespace, "Service.Name", k8sService.Name)
+			return makeReturnValuesRequeueWithError(err)
+		}
+
+		// Service created successfully - return and requeue
+		return makeReturnValuesRequeue()
+	} else if err != nil {
+		reconciler.Log.Error(err, "Failed to get Deployment")
+		return makeReturnValuesRequeueWithError(err)
+	}
+
+	// Service already exists
+	reconciler.Log.Info("Service already exists", "Service.Namespace", k8sService.Namespace, "Service.Name", k8sService.Name)
 
 	return makeReturnValuesContinue()
 }
@@ -228,14 +257,17 @@ func (reconciler *InstanceReconciler) createK8sService(customResource *itav1alph
 			Selector: labels,
 			Ports: []corev1.ServicePort{
 				{
+					Name:       "http",
 					Port:       80,
 					TargetPort: intstr.FromInt(80),
 				},
 				{
+					Name:       "https",
 					Port:       443,
 					TargetPort: intstr.FromInt(443),
 				},
 				{
+					Name:       "mysql",
 					Port:       3306,
 					TargetPort: intstr.FromInt(3306),
 				},
@@ -243,6 +275,9 @@ func (reconciler *InstanceReconciler) createK8sService(customResource *itav1alph
 			Type: corev1.ServiceTypeClusterIP,
 		},
 	}
+
+	// Set Instance instance as the owner and controller
+	ctrl.SetControllerReference(customResource, k8sService, reconciler.Scheme)
 
 	return k8sService
 }
