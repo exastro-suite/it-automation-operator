@@ -42,6 +42,7 @@ type InstanceReconciler struct {
 // +kubebuilder:rbac:groups=ita.cr.exastro,resources=instances/finalizers,verbs=update
 // +kubebuilder:rbac:groups=apps,resources=deployments,verbs=get;list;watch;create;update;delete
 // +kubebuilder:rbac:groups=core,resources=services,verbs=get;list;watch;create;update;delete
+
 func (reconciler *InstanceReconciler) Reconcile(ctx context.Context, request ctrl.Request) (ctrl.Result, error) {
 	customResource := &itav1alpha1.Instance{}
 	requeue, result, err := reconciler.fetchCustomResource(ctx, request, customResource)
