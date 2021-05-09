@@ -29,11 +29,18 @@ type InstanceSpec struct {
 	// Important: Run "make" to regenerate code after modifying this file
 
 	// +kubebuilder:validation:Pattern=`^[1-9][0-9]*\.[0-9]+\.[0-9]+$`
+	// +kubebuilder:validation:Required
 	Version string `json:"version,omitempty"`
 
-	// +kubebuilder:validation:MinLength=4
-	// +kubebuilder:validation:MLength=30
-	DatabasePvcName string `json:"databasePvcName,omitempty"`
+	// +kubebuilder:validation:MinLength=2
+	// +kubebuilder:validation:MaxLength=2
+	// +kubebuilder:default=en
+	Language string `json:"language,omitempty"`
+
+	/*
+		// +kubebuilder:validation:Required
+		DatabasePvcName string `json:"databasePvcName,omitempty"`
+	*/
 }
 
 // InstanceStatus defines the observed state of Instance
@@ -44,7 +51,8 @@ type InstanceStatus struct {
 
 // +kubebuilder:object:root=true
 // +kubebuilder:subresource:status
-// +kubebuilder:printcolumn:name="Released",type=string,JSONPath=`.spec.version`
+// +kubebuilder:printcolumn:name="Version",type=string,JSONPath=`.spec.version`
+//
 // Instance is the Schema for the instances API
 type Instance struct {
 	metav1.TypeMeta   `json:",inline"`
@@ -55,7 +63,7 @@ type Instance struct {
 }
 
 // +kubebuilder:object:root=true
-
+//
 // InstanceList contains a list of Instance
 type InstanceList struct {
 	metav1.TypeMeta `json:",inline"`

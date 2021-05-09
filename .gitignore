@@ -23,3 +23,6 @@ testbin/*
 *.swp
 *.swo
 *~
+
+# log files for debug
+*.log
