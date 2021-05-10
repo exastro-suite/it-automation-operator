@@ -68,6 +68,8 @@ func (reconciler *InstanceReconciler) Reconcile(ctx context.Context, request ctr
 		return result, err
 	}
 
+	init_database()
+
 	return ctrl.Result{}, nil
 }
 
