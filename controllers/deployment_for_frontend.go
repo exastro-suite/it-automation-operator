@@ -76,7 +76,7 @@ func (factory *DeploymentFactoryForFrontend) New() client.Object {
 					Containers: []corev1.Container{
 						{
 							Name:  "it-automation",
-							Image: fmt.Sprintf("exastro/it-automation:%s-%s", factory.CustomResource.Spec.Version, factory.CustomResource.Spec.Language),
+							Image: fmt.Sprintf("ghcr.io/exastro-suite/it-automation:%s-ubi8-%s", factory.CustomResource.Spec.Version, factory.CustomResource.Spec.Language),
 							Ports: []corev1.ContainerPort{
 								{
 									Name:          "http",
