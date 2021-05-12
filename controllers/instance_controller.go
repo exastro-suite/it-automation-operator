@@ -62,14 +62,6 @@ func (reconciler *InstanceReconciler) Reconcile(ctx context.Context, request ctr
 		return result, err
 	}
 
-	databaseServiceFactory := &ServiceFactoryForDatabase{CustomResource: customResource, Reconciler: reconciler}
-	requeue, result, err = reconciler.ensureK8sResource(ctx, request, databaseServiceFactory)
-	if requeue {
-		return result, err
-	}
-
-	init_database()
-
 	return ctrl.Result{}, nil
 }
 
