@@ -94,29 +94,37 @@ func (factory *DeploymentFactoryForFrontend) New() client.Object {
 							SecurityContext: &corev1.SecurityContext{
 								Privileged: &privileged,
 							},
-							/*
-								VolumeMounts: []corev1.VolumeMount{
-									{
-										Name:      "database-volume",
-										MountPath: "/var/lib/mysql",
-									},
+							VolumeMounts: []corev1.VolumeMount{
+								{
+									Name:      "file-volume",
+									MountPath: "/exastro_file_volume",
 								},
-							*/
-						},
-					},
-					RestartPolicy: "Always",
-					/*
-						Volumes: []corev1.Volume{
-							{
-								Name: "database-volume",
-								VolumeSource: corev1.VolumeSource{
-									PersistentVolumeClaim: &corev1.PersistentVolumeClaimVolumeSource{
-										ClaimName: factory.CustomResource.Spec.DatabasePvcName,
-									},
+								{
+									Name:      "database-volume",
+									MountPath: "/exastro_database_volume",
 								},
 							},
 						},
-					*/
+					},
+					RestartPolicy: "Always",
+					Volumes: []corev1.Volume{
+						{
+							Name: "file-volume",
+							VolumeSource: corev1.VolumeSource{
+								PersistentVolumeClaim: &corev1.PersistentVolumeClaimVolumeSource{
+									ClaimName: factory.CustomResource.Spec.FilePvcName,
+								},
+							},
+						},
+						{
+							Name: "database-volume",
+							VolumeSource: corev1.VolumeSource{
+								PersistentVolumeClaim: &corev1.PersistentVolumeClaimVolumeSource{
+									ClaimName: factory.CustomResource.Spec.DatabasePvcName,
+								},
+							},
+						},
+					},
 				},
 			},
 		},

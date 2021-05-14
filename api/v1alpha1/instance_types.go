@@ -37,10 +37,11 @@ type InstanceSpec struct {
 	// +kubebuilder:default=en
 	Language string `json:"language,omitempty"`
 
-	/*
-		// +kubebuilder:validation:Required
-		DatabasePvcName string `json:"databasePvcName,omitempty"`
-	*/
+	// +kubebuilder:validation:Required
+	FilePvcName string `json:"filePvcName,omitempty"`
+
+	// +kubebuilder:validation:Required
+	DatabasePvcName string `json:"databasePvcName,omitempty"`
 }
 
 // InstanceStatus defines the observed state of Instance

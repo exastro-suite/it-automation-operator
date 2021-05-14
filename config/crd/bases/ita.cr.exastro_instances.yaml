@@ -40,6 +40,10 @@ spec:
           spec:
             description: InstanceSpec defines the desired state of Instance
             properties:
+              databasePvcName:
+                type: string
+              filePvcName:
+                type: string
               language:
                 default: en
                 maxLength: 2
