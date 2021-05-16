@@ -67,11 +67,6 @@ func (factory *ServiceFactoryForFrontend) New() client.Object {
 					Port:       80,
 					TargetPort: intstr.FromInt(80),
 				},
-				{
-					Name:       "https",
-					Port:       443,
-					TargetPort: intstr.FromInt(443),
-				},
 			},
 			Type: corev1.ServiceTypeNodePort,
 		},

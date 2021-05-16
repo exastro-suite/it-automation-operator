@@ -83,12 +83,18 @@ func (factory *DeploymentFactoryForFrontend) New() client.Object {
 									ContainerPort: 80,
 								},
 								{
-									Name:          "https",
-									ContainerPort: 443,
-								},
-								{
 									Name:          "mysql",
 									ContainerPort: 3306,
+								},
+							},
+							Env: []corev1.EnvVar{
+								{
+									Name:  "EXASTRO_AUTO_FILE_VOLUME_INIT",
+									Value: "true",
+								},
+								{
+									Name:  "EXASTRO_AUTO_DATABASE_VOLUME_INIT",
+									Value: "true",
 								},
 							},
 							SecurityContext: &corev1.SecurityContext{
@@ -97,11 +103,11 @@ func (factory *DeploymentFactoryForFrontend) New() client.Object {
 							VolumeMounts: []corev1.VolumeMount{
 								{
 									Name:      "file-volume",
-									MountPath: "/exastro_file_volume",
+									MountPath: "/exastro-file-volume",
 								},
 								{
 									Name:      "database-volume",
-									MountPath: "/exastro_database_volume",
+									MountPath: "/exastro-database-volume",
 								},
 							},
 						},
