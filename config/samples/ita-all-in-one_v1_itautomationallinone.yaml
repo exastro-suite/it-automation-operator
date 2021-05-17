@@ -1,0 +1,9 @@
+apiVersion: ita-all-in-one.ita.exastro/v1
+kind: ITAutomationAllInOne
+metadata:
+  name: itautomationallinone-sample
+spec:
+  version: 1.7.1
+  language: ja
+  filePvcName: exastro-file-volume-claim
+  databasePvcName: exastro-database-volume-claim

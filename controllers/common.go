@@ -17,7 +17,7 @@ limitations under the License.
 package controllers
 
 import (
-	itav1alpha1 "github.com/exastro-suite/it-automation-operator/api/v1alpha1"
+	itaallinonev1 "github.com/exastro-suite/it-automation-operator/api/v1"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
@@ -30,9 +30,9 @@ type K8sResourceFactory interface {
 	New() client.Object
 }
 
-func createLabels(customResource *itav1alpha1.Instance) map[string]string {
+func createLabels(customResource *itaallinonev1.ITAutomationAllInOne) map[string]string {
 	return map[string]string{
-		"app.kubernetes.io/name":     "it_automation",
+		"app.kubernetes.io/name":     "it-automation-all-in-one",
 		"app.kubernetes.io/instance": customResource.Name,
 	}
 }

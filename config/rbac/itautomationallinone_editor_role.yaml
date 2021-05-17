@@ -1,13 +1,13 @@
-# permissions for end users to edit instances.
+# permissions for end users to edit itautomationallinones.
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: instance-editor-role
+  name: itautomationallinone-editor-role
 rules:
 - apiGroups:
-  - ita.cr.exastro
+  - ita-all-in-one.ita.exastro
   resources:
-  - instances
+  - itautomationallinones
   verbs:
   - create
   - delete
@@ -17,8 +17,8 @@ rules:
   - update
   - watch
 - apiGroups:
-  - ita.cr.exastro
+  - ita-all-in-one.ita.exastro
   resources:
-  - instances/status
+  - itautomationallinones/status
   verbs:
   - get

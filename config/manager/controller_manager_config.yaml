@@ -8,4 +8,4 @@ webhook:
   port: 9443
 leaderElection:
   leaderElect: true
-  resourceName: c11eeb3a.cr.exastro
+  resourceName: c11eeb3a.ita.exastro

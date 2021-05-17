@@ -1,5 +1,5 @@
 # Build the manager binary
-FROM golang:1.16 as builder
+FROM golang:1.15 as builder
 
 RUN --mount=type=secret,id=extra-root-ca if [ -f /run/secrets/extra-root-ca ]; then cp /run/secrets/extra-root-ca /usr/local/share/ca-certificates/extra-root-ca.crt; fi
 RUN update-ca-certificates
@@ -23,5 +23,6 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 GO111MODULE=on go build -a -o manager 
 FROM registry.access.redhat.com/ubi8/ubi:latest
 WORKDIR /
 COPY --from=builder /workspace/manager .
+USER 65532:65532
 
 ENTRYPOINT ["/manager"]

@@ -24,12 +24,12 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	itav1alpha1 "github.com/exastro-suite/it-automation-operator/api/v1alpha1"
+	itaallinonev1 "github.com/exastro-suite/it-automation-operator/api/v1"
 )
 
 type ServiceFactoryForFrontend struct {
-	Reconciler     *InstanceReconciler
-	CustomResource *itav1alpha1.Instance
+	Reconciler     *ITAutomationAllInOneReconciler
+	CustomResource *itaallinonev1.ITAutomationAllInOne
 }
 
 func (factory *ServiceFactoryForFrontend) GetName() string {

@@ -6,24 +6,25 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.4.1
   creationTimestamp: null
-  name: instances.ita.cr.exastro
+  name: itautomationallinones.ita-all-in-one.ita.exastro
 spec:
-  group: ita.cr.exastro
+  group: ita-all-in-one.ita.exastro
   names:
-    kind: Instance
-    listKind: InstanceList
-    plural: instances
-    singular: instance
+    kind: ITAutomationAllInOne
+    listKind: ITAutomationAllInOneList
+    plural: itautomationallinones
+    singular: itautomationallinone
   scope: Namespaced
   versions:
   - additionalPrinterColumns:
     - jsonPath: .spec.version
       name: Version
       type: string
-    name: v1alpha1
+    name: v1
     schema:
       openAPIV3Schema:
-        description: Instance is the Schema for the instances API
+        description: ITAutomationAllInOne is the Schema for the itautomationallinones
+          API
         properties:
           apiVersion:
             description: 'APIVersion defines the versioned schema of this representation
@@ -38,7 +39,7 @@ spec:
           metadata:
             type: object
           spec:
-            description: InstanceSpec defines the desired state of Instance
+            description: ITAutomationAllInOneSpec defines the desired state of ITAutomationAllInOne
             properties:
               databasePvcName:
                 type: string
@@ -54,7 +55,8 @@ spec:
                 type: string
             type: object
           status:
-            description: InstanceStatus defines the observed state of Instance
+            description: ITAutomationAllInOneStatus defines the observed state of
+              ITAutomationAllInOne
             type: object
         type: object
     served: true

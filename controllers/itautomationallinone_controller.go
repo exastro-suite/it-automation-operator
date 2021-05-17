@@ -27,24 +27,24 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	itav1alpha1 "github.com/exastro-suite/it-automation-operator/api/v1alpha1"
+	itaallinonev1 "github.com/exastro-suite/it-automation-operator/api/v1"
 )
 
-// InstanceReconciler reconciles a Instance object
-type InstanceReconciler struct {
+// ITAutomationAllInOneReconciler reconciles a ITAutomationAllInOne object
+type ITAutomationAllInOneReconciler struct {
 	client.Client
 	Log    logr.Logger
 	Scheme *runtime.Scheme
 }
 
-// +kubebuilder:rbac:groups=ita.cr.exastro,resources=instances,verbs=get;list;watch;create;update;patch;delete
-// +kubebuilder:rbac:groups=ita.cr.exastro,resources=instances/status,verbs=get;update;patch
-// +kubebuilder:rbac:groups=ita.cr.exastro,resources=instances/finalizers,verbs=update
-// +kubebuilder:rbac:groups=apps,resources=deployments,verbs=get;list;watch;create;update;delete
-// +kubebuilder:rbac:groups=core,resources=services,verbs=get;list;watch;create;update;delete
+//+kubebuilder:rbac:groups=ita-all-in-one.ita.exastro,resources=itautomationallinones,verbs=get;list;watch;create;update;patch;delete
+//+kubebuilder:rbac:groups=ita-all-in-one.ita.exastro,resources=itautomationallinones/status,verbs=get;update;patch
+//+kubebuilder:rbac:groups=ita-all-in-one.ita.exastro,resources=itautomationallinones/finalizers,verbs=update
+//+kubebuilder:rbac:groups=apps,resources=deployments,verbs=get;list;watch;create;update;delete
+//+kubebuilder:rbac:groups=core,resources=services,verbs=get;list;watch;create;update;delete
 
-func (reconciler *InstanceReconciler) Reconcile(ctx context.Context, request ctrl.Request) (ctrl.Result, error) {
-	customResource := &itav1alpha1.Instance{}
+func (reconciler *ITAutomationAllInOneReconciler) Reconcile(ctx context.Context, request ctrl.Request) (ctrl.Result, error) {
+	customResource := &itaallinonev1.ITAutomationAllInOne{}
 	requeue, result, err := reconciler.fetchCustomResource(ctx, request, customResource)
 	if requeue {
 		return result, err
@@ -65,7 +65,7 @@ func (reconciler *InstanceReconciler) Reconcile(ctx context.Context, request ctr
 	return ctrl.Result{}, nil
 }
 
-func (reconciler *InstanceReconciler) fetchCustomResource(ctx context.Context, request ctrl.Request, customResource *itav1alpha1.Instance) (bool, ctrl.Result, error) {
+func (reconciler *ITAutomationAllInOneReconciler) fetchCustomResource(ctx context.Context, request ctrl.Request, customResource *itaallinonev1.ITAutomationAllInOne) (bool, ctrl.Result, error) {
 	err := reconciler.Get(ctx, request.NamespacedName, customResource)
 	if err != nil {
 		if errors.IsNotFound(err) {
@@ -83,7 +83,7 @@ func (reconciler *InstanceReconciler) fetchCustomResource(ctx context.Context, r
 	return makeReturnValuesContinue()
 }
 
-func (reconciler *InstanceReconciler) ensureK8sResource(ctx context.Context, request ctrl.Request, k8sResourceFactory K8sResourceFactory) (bool, ctrl.Result, error) {
+func (reconciler *ITAutomationAllInOneReconciler) ensureK8sResource(ctx context.Context, request ctrl.Request, k8sResourceFactory K8sResourceFactory) (bool, ctrl.Result, error) {
 	k8sResource := k8sResourceFactory.NewDefault()
 	err := reconciler.Get(ctx, k8sResourceFactory.GetNamespaceName(), k8sResource)
 	if err != nil && errors.IsNotFound(err) {
@@ -135,10 +135,10 @@ func makeReturnValuesContinue() (bool, ctrl.Result, error) {
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *InstanceReconciler) SetupWithManager(mgr ctrl.Manager) error {
+func (reconciler *ITAutomationAllInOneReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&itav1alpha1.Instance{}).
+		For(&itaallinonev1.ITAutomationAllInOne{}).
 		Owns(&appsv1.Deployment{}).
 		Owns(&corev1.Service{}).
-		Complete(r)
+		Complete(reconciler)
 }

@@ -4,7 +4,7 @@ on:
 env:
   EXASTRO_ITA_OPERATOR_IMAGE_NAME: it-automation-operator
   EXASTRO_ITA_OPERATOR_VERSION: '0.0.1'
-  EXASTRO_ITA_GOLANG_VERSION: '1.16'
+  EXASTRO_ITA_GOLANG_VERSION: '1.15'
 
 jobs:
   build_and_push_image:

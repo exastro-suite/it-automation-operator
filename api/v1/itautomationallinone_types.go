@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package v1alpha1
+package v1
 
 import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -23,8 +23,8 @@ import (
 // EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
 // NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
 
-// InstanceSpec defines the desired state of Instance
-type InstanceSpec struct {
+// ITAutomationAllInOneSpec defines the desired state of ITAutomationAllInOne
+type ITAutomationAllInOneSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 
@@ -44,34 +44,34 @@ type InstanceSpec struct {
 	DatabasePvcName string `json:"databasePvcName,omitempty"`
 }
 
-// InstanceStatus defines the observed state of Instance
-type InstanceStatus struct {
+// ITAutomationAllInOneStatus defines the observed state of ITAutomationAllInOne
+type ITAutomationAllInOneStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 }
 
-// +kubebuilder:object:root=true
-// +kubebuilder:subresource:status
-// +kubebuilder:printcolumn:name="Version",type=string,JSONPath=`.spec.version`
-//
-// Instance is the Schema for the instances API
-type Instance struct {
+//+kubebuilder:object:root=true
+//+kubebuilder:subresource:status
+//+kubebuilder:printcolumn:name="Version",type=string,JSONPath=`.spec.version`
+
+// ITAutomationAllInOne is the Schema for the itautomationallinones API
+type ITAutomationAllInOne struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec   InstanceSpec   `json:"spec,omitempty"`
-	Status InstanceStatus `json:"status,omitempty"`
+	Spec   ITAutomationAllInOneSpec   `json:"spec,omitempty"`
+	Status ITAutomationAllInOneStatus `json:"status,omitempty"`
 }
 
-// +kubebuilder:object:root=true
-//
-// InstanceList contains a list of Instance
-type InstanceList struct {
+//+kubebuilder:object:root=true
+
+// ITAutomationAllInOneList contains a list of ITAutomationAllInOne
+type ITAutomationAllInOneList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	Items           []Instance `json:"items"`
+	Items           []ITAutomationAllInOne `json:"items"`
 }
 
 func init() {
-	SchemeBuilder.Register(&Instance{}, &InstanceList{})
+	SchemeBuilder.Register(&ITAutomationAllInOne{}, &ITAutomationAllInOneList{})
 }

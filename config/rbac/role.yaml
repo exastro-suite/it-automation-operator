@@ -29,9 +29,9 @@ rules:
   - update
   - watch
 - apiGroups:
-  - ita.cr.exastro
+  - ita-all-in-one.ita.exastro
   resources:
-  - instances
+  - itautomationallinones
   verbs:
   - create
   - delete
@@ -41,15 +41,15 @@ rules:
   - update
   - watch
 - apiGroups:
-  - ita.cr.exastro
+  - ita-all-in-one.ita.exastro
   resources:
-  - instances/finalizers
+  - itautomationallinones/finalizers
   verbs:
   - update
 - apiGroups:
-  - ita.cr.exastro
+  - ita-all-in-one.ita.exastro
   resources:
-  - instances/status
+  - itautomationallinones/status
   verbs:
   - get
   - patch
