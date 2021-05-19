@@ -1,0 +1,99 @@
+---
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: operator-pv-01
+spec:
+  capacity:
+    storage: 10Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: vsphere-sc
+  vsphereVolume:
+    volumePath: >-
+      [vSAN-DTS001]
+      6f808660-023b-cdc9-8bf3-9440c925427e/vsphere-10g-operator-01.vmdk
+    fsType: ext4
+
+
+---
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: operator-pv-02
+spec:
+  capacity:
+    storage: 10Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: vsphere-sc
+  vsphereVolume:
+    volumePath: >-
+      [vSAN-DTS001]
+      6f808660-023b-cdc9-8bf3-9440c925427e/vsphere-10g-operator-02.vmdk
+    fsType: ext4
+
+
+---
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: operator-pv-03
+spec:
+  capacity:
+    storage: 10Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: vsphere-sc
+  vsphereVolume:
+    volumePath: >-
+      [vSAN-DTS001]
+      6f808660-023b-cdc9-8bf3-9440c925427e/vsphere-10g-operator-03.vmdk
+    fsType: ext4
+
+
+---
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: operator-pv-04
+spec:
+  capacity:
+    storage: 10Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: vsphere-sc
+  vsphereVolume:
+    volumePath: >-
+      [vSAN-DTS001]
+      6f808660-023b-cdc9-8bf3-9440c925427e/vsphere-10g-operator-04.vmdk
+    fsType: ext4
+
+
+
+---
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: operator-pv-05
+spec:
+  capacity:
+    storage: 10Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: vsphere-sc
+  vsphereVolume:
+    volumePath: >-
+      [vSAN-DTS001]
+      6f808660-023b-cdc9-8bf3-9440c925427e/vsphere-10g-operator-05.vmdk
+    fsType: ext4
