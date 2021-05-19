@@ -119,6 +119,7 @@ endif
 docker-build: test ## Build docker image with the manager.
 	DOCKER_BUILDKIT=1 docker build \
 		--tag ${IMG} \
+		--no-cache \
 		--progress=plain \
 		--build-arg HTTP_PROXY \
 		--build-arg http_proxy \
