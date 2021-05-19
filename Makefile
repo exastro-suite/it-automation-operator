@@ -112,6 +112,10 @@ build: generate fmt vet ## Build manager binary.
 run: manifests generate fmt vet ## Run a controller from your host.
 	go run ./main.go
 
+ifneq ($(origin ITAOP_EXTRA_ROOT_CA), undefined)
+DOCKER_BUILD_OPT_SECRET := --secret id=extra-root-ca,src=$(ITAOP_EXTRA_ROOT_CA)
+endif
+
 docker-build: test ## Build docker image with the manager.
 	DOCKER_BUILDKIT=1 docker build \
 		--tag ${IMG} \
