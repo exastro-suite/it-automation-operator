@@ -4,6 +4,6 @@ metadata:
   name: ita1
 spec:
   version: 1.7.1
-  language: ja
+  language: en
   filePvcName: ita1-file-volume-claim
   databasePvcName: ita1-database-volume-claim
