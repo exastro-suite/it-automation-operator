@@ -9,8 +9,8 @@ spec:
   volumeMode: Filesystem
   resources:
     requests:
-      storage: 1Gi
-  storageClassName: standard
+      storage: 10Gi
+  storageClassName: vsphere-sc
 
 
 ---
@@ -24,17 +24,5 @@ spec:
   volumeMode: Filesystem
   resources:
     requests:
-      storage: 1Gi
-  storageClassName: standard
-
-
----
-apiVersion: ita-all-in-one.ita.exastro/v1
-kind: ITAutomationAllInOne
-metadata:
-  name: ita1
-spec:
-  version: 1.7.1
-  language: ja
-  filePvcName: ita1-file-volume-claim
-  databasePvcName: ita1-database-volume-claim
+      storage: 10Gi
+  storageClassName: vsphere-sc

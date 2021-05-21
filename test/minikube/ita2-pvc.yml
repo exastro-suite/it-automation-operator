@@ -26,15 +26,3 @@ spec:
     requests:
       storage: 1Gi
   storageClassName: standard
-
-
----
-apiVersion: ita-all-in-one.ita.exastro/v1
-kind: ITAutomationAllInOne
-metadata:
-  name: ita2
-spec:
-  version: 1.7.1
-  language: ja
-  filePvcName: ita2-file-volume-claim
-  databasePvcName: ita2-database-volume-claim
