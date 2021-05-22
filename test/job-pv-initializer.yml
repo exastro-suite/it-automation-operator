@@ -1,0 +1,35 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: pv-initializer
+spec:
+  completions: 1
+  template:
+    spec:
+      containers:
+      - name: pv-initializer
+        image: alpine
+        command: ["find", "/mnt", "-mindepth", "2", "-delete"]
+        volumeMounts:
+          - name: ita1-file-volume
+            mountPath: /mnt/ita1-file-volume
+          - name: ita1-database-volume
+            mountPath: /mnt/ita1-database-volume
+          - name: ita2-file-volume
+            mountPath: /mnt/ita2-file-volume
+          - name: ita2-database-volume
+            mountPath: /mnt/ita2-database-volume
+      volumes:
+        - name: ita1-file-volume
+          persistentVolumeClaim:
+            claimName: ita1-file-volume-claim
+        - name: ita1-database-volume
+          persistentVolumeClaim:
+            claimName: ita1-database-volume-claim
+        - name: ita2-file-volume
+          persistentVolumeClaim:
+            claimName: ita2-file-volume-claim
+        - name: ita2-database-volume
+          persistentVolumeClaim:
+            claimName: ita2-database-volume-claim
+      restartPolicy: Never
